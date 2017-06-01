@@ -1,0 +1,31 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#login">SIDM</a>
+        </div>
+    </div>
+</nav>
+
+<div class="col-md-6 col-md-offset-3" ng-controller="RegisterController as rgsCtrl" >
+    <h2>Rejestracja</h2>
+    <form name="registerForm" ng-submit="rgsCtrl.register(rgsCtrl.firstName,rgsCtrl.lastName, rgsCtrl.email)" role="form">
+        <div class="form-group" ng-class="{ 'has-error': registerForm.firstName.$dirty && registerForm.firstName.$error.required }">
+            <label for="firstName">Imię</label>
+            <input type="text" name="firstName" id="firstName" class="form-control" ng-model="rgsCtrl.firstName" required />
+            <span ng-show="registerForm.firstName.$dirty && registerForm.firstName.$error.required" class="help-block">Imię jest wymagane</span>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error': registerForm.lastName.$dirty && registerForm.lastName.$error.required }">
+            <label for="lastName">Nazwisko</label>
+            <input type="text" name="lastName" id="lastName" class="form-control" ng-model="rgsCtrl.lastName" required />
+            <span ng-show="registerForm.lastName.$dirty && registerForm.lastName.$error.required" class="help-block">Nazwisko jest wymagane</span>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error': registerForm.email.$dirty && registerForm.email.$error.required }">
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email" class="form-control" ng-model="rgsCtrl.email" required />
+            <span ng-show="registerForm.email.$dirty && registerForm.email.$error.required" class="help-block">Adres email jest wymagane</span>
+        </div>
+        <div class="form-actions">
+            <button type="submit" ng-disabled="registerForm.$invalid || rgsCtrl.dataLoading" class="btn btn-primary">Zarejestruj</button>
+        </div>
+    </form>
+</div>

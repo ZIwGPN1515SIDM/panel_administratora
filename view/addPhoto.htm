@@ -1,0 +1,36 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#login">SIDM</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="#placeList">Lista miejsc</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="col-md-6 col-md-offset-3" ng-controller="AddPhotoController as addPhotoCtrl" style="margin-top: 50px">
+                <h2>Dodawanie zdjęcia</h2>
+                <form style="margin-top: 35px" name="addPhotoForm" role="form">
+                    <div class="form-group" ng-class="{ 'has-error': addPhotoForm.url.$dirty && addPhotoForm.url.$error.required }">
+                        <label for="url">Adres url zdjęcia:</label>
+                        <input type="text" name="url" id="url" class="form-control" ng-model="addPhotoCtrl.url" required/>
+                    </div>
+                    <div class="form-actions" style="text-align: right">
+                        <button type="submit" ng-disabled="addPhotoForm.$invalid || addPhotoForm.dataLoading"
+                                ng-click="addPhotoCtrl.addPhoto(addPhotoCtrl.url)" class="btn btn-primary">Dodaj
+                        </button>
+                        <button type="submit"
+                                ng-click="addPhotoCtrl.back()" class="btn btn-primary">Anuluj
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

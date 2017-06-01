@@ -1,0 +1,87 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="TopBarController as topBar">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="">SIDM</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="javascript:void(0)" ng-click="topBar.logout()">Wyloguj</a></li>
+
+        </ul>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="#placeList">Lista miejsc</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+             ng-controller="AddPlaceController as addPlaceCtrl">
+            <form name="addPlaceForm" ng-submit="addPlaceCtrl.addPlace()" role="form">
+                <tabs>
+                    <pane title="Dane">
+                        <div style="margin-top: 25px" class="form-group"
+                             ng-class="{ 'has-error': addPlaceForm.placeName.$dirty && addPlaceForm.placeName.$error.required }">
+                            <label for="placeName">Nazwa:</label>
+                            <input type="text" name="placeName" id="placeName" class="form-control"
+                                   ng-model="addPlaceCtrl.placeName" required/>
+                        </div>
+                        <div class="form-group"
+                             ng-class="{ 'has-error': addPlaceForm.placeDescription.$dirty && addPlaceForm.placeDescription.$error.required }">
+                            <label for="placeDescription">Opis:</label>
+                            <textarea class="form-control" rows="4" maxlength="280"
+                                      id="placeDescription" ng-model="addPlaceForm.placeDescription"
+                                      required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="placeArea">Obszar</label>
+                            <select class="form-control" ng-model="addPlaceForm.placeArea" id="placeArea"
+                                    name="placeArea"
+                                    ng-options="o as o for o in areas">
+                            </select>
+                        </div>
+                    </pane>
+
+                    <pane title="Reklama">
+                        <div style="margin-top: 25px" class="form-group"
+                             ng-class="{ 'has-error': addPlaceForm.advertContent.$dirty && addPlaceForm.advertContent.$error.required }">
+                            <label for="advertContent">Treść:</label>
+                            <input type="text" name="advertContent" id="advertContent" class="form-control"
+                                   ng-model="addPlaceCtrl.advertContent"/>
+                        </div>
+                    </pane>
+
+                    <pane title="Event">
+                        <div style="margin-top: 25px" class="form-group"
+                             ng-class="{ 'has-error': addPlaceForm.eventName.$dirty && addPlaceForm.eventName.$error.required }">
+                            <label for="eventName">Nazwa:</label>
+                            <input type="text" name="eventName" id="eventName" class="form-control"
+                                   ng-model="addPlaceCtrl.eventName"/>
+                        </div>
+                        <div class="form-group"
+                             ng-class="{ 'has-error': addPlaceForm.eventContent.$dirty && addPlaceForm.eventContent.$error.required }">
+                            <label for="eventContent">Treść:</label>
+                            <input type="text" name="eventContent" id="eventContent" class="form-control"
+                                   ng-model="addPlaceCtrl.eventContent"/>
+                        </div>
+                        <div class="form-group"
+                             ng-class="{ 'has-error': addPlaceForm.eventEnd.$dirty && addPlaceForm.eventEnd.$error.required }">
+                            <label for="eventEnd">Nazwa:</label>
+                            <input type="date" name="eventEnd" id="eventEnd" class="form-control"
+                                   ng-model="addPlaceCtrl.eventEnd"/>
+                        </div>
+                    </pane>
+                </tabs>
+                <div class="form-actions" style="text-align: right; margin-top: 10px">
+                    <button type="submit" ng-disabled="addPlaceForm.$invalid || addPlaceForm.dataLoading"
+                            class="btn btn-primary">Dodaj
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>

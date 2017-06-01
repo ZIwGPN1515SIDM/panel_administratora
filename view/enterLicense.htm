@@ -1,0 +1,20 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#login">SIDM</a>
+        </div>
+    </div>
+</nav>
+
+<div class="col-md-6 col-md-offset-3" ng-controller="LicenseController as licenseCtrl" style="margin-top: 50px">
+    <h2>Aktywacja licencji</h2>
+    <form style="margin-top: 35px" name="licenseForm" ng-submit="licenseCtrl.activateLicense(licenseCtrl.key)" role="form">
+        <div class="form-group" ng-class="{ 'has-error': licenseForm.key.$dirty && licenseForm.key.$error.required }">
+            <label for="key">Klucz:</label>
+            <input type="text" name="key" id="key" class="form-control" ng-model="licenseCtrl.key" required />
+        </div>
+        <div class="form-actions" style="text-align: right">
+            <button type="submit" ng-disabled="licenseForm.$invalid || licenseForm.dataLoading" class="btn btn-primary">Aktywuj</button>
+        </div>
+    </form>
+</div>
