@@ -4,7 +4,7 @@ var categoryList = [];
 var areaList = [];
 var tmpId = -1;
 var photoMode = -1; //1 - PLACE, 2 - NAMESPACE
-
+var tmpObj = {};
 //Konfiguracja widoków
 app.config(function ($routeProvider) {
     $routeProvider
@@ -182,7 +182,13 @@ app.controller('NamespaceTableController', function ($scope, $http, $location, $
         tmpId = namespace.ID;
         photoMode = 2;
         $location.path("/photoList");
-    }
+    };
+
+    this.edit = function (namespace) {
+        tmpObj = namespace;
+        console.log(namespace);
+        $location.path("/editNamespace");
+    };
 });
 
 app.controller('PlaceTableController', function ($scope, $http, $location, $cookies, $uibModal) {
@@ -210,7 +216,12 @@ app.controller('PlaceTableController', function ($scope, $http, $location, $cook
         tmpId = place.ID;
         photoMode = 1;
         $location.path("/photoList");
-    }
+    };
+
+    this.edit = function (place) {
+        tmpObj = place;
+        $location.path("/editPlace");
+    };
 });
 
 app.controller('LicenseController', function ($scope, $http, $location, $cookies, $uibModal) {
@@ -394,7 +405,11 @@ app.controller('AddPhotoController', function ($scope, $http, $location, $cookie
                 }
             }, function (error) {
                 console.log(error);
-                //TODO
+                if (error.status == "401" || error.status == "403") {
+                    $cookies.remove("session_token");
+                    $cookies.remove("userid");
+                    $location.path("/login");
+                }
             });
     };
 
@@ -418,6 +433,13 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
         if (response.status == "200") {
             $scope.names = response.data.resource;
             console.log(response);
+        }
+    }, function (error) {
+        console.log(error);
+        if (error.status == "401" || error.status == "403") {
+            $cookies.remove("session_token");
+            $cookies.remove("userid");
+            $location.path("/login");
         }
     });
 
@@ -457,10 +479,137 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
                 });
             }, function (error) {
                 console.log(error);
-                //TODO
+                if (error.status == "401" || error.status == "403") {
+                    $cookies.remove("session_token");
+                    $cookies.remove("userid");
+                    $location.path("/login");
+                }
             })
     };
 
+});
+
+app.controller('EditNamespaceController', function ($scope, $http, $location, $cookies, NgMap) {
+
+    var vm = this;
+    var lng = 0, lat = 0;
+    $scope.categories = categoryList;
+
+    $http.get("http://graymanix.ovh/api/v2/category?api_key=be503ed4e9249384e58aad5d34ba46acbad352350b19050b7410ea1049dbef77").then(function (response) {
+        if (response.status == "200") {
+            categoryList.length = 0;
+            categoryList.push("-- Wybierz kategorię --");
+            $scope.editNamespaceForm.placeCategory = "-- Wybierz kategorię --";
+            var count = 0;
+            var cat = "";
+            angular.forEach(response.data.categories, function (value, key) {
+                categoryList.push(value.ID + ". " + value.NAME);
+                if(value.ID == tmpObj.CATEGORY_ID) {
+                    cat = value.ID + ". " + value.NAME;
+                    console.log(cat);
+                }
+                count++;
+            });
+            $scope.namespace = {
+                placeDescription: tmpObj.DESCRIPTION,
+                placeName: tmpObj.NAME,
+                placeCategory: cat,
+                longitude: tmpObj.LONGITUDE,
+                latitude: tmpObj.LATITUDE,
+                advertContent: tmpObj.ADVERT,
+                eventName: tmpObj.EVENT_NAME,
+                eventContent: tmpObj.EVENT_CONTENT,
+                eventEnd: new Date(tmpObj.EVENT_END)
+            };
+        }
+    }, function (error) {
+        console.log(error);
+        if (error.status == "401" || error.status == "403") {
+            $cookies.remove("session_token");
+            $cookies.remove("userid");
+            $location.path("/login");
+        }
+    });
+
+    this.editNamespace = function() {
+        console.log($scope.namespace);
+        console.log(eventEnd.value)
+    };
+
+    NgMap.getMap().then(function (map) {
+        vm.map = map;
+        google.maps.event.trigger(map, 'resize');
+    });
+
+    this.placeMarker = function (e) {
+        var tmp = e.latLng;
+        latitude.value = tmp.lat();
+        longitude.value = tmp.lng();
+        lat = tmp.lat();
+        lng = tmp.lng();
+    }
+});
+
+app.controller('EditPlaceController', function ($scope, $http, $location, $cookies, NgMap) {
+
+    var vm = this;
+    var lng = 0, lat = 0;
+    $scope.areas = areaList;
+
+    console.log(tmpObj);
+
+    $http.get("http://graymanix.ovh/api/v2/sidm/_table/NAMESPACES?fields=ID%2C%20NAME&api_key=486bcd2b0b7cc55fbc3c16f1aadf041686d9cf68ce726b55c7c4012bddaab0fe").then(function (response) {
+        if (response.status == "200") {
+            areaList.length = 0;
+            areaList.push("-- Wybierz obszar --");
+            $scope.editPlaceForm.placeArea = "-- Wybierz obszar --";
+            var count = 0;
+            var area = "";
+            angular.forEach(response.data.resource, function (value, key) {
+                areaList.push(value.ID + ". " + value.NAME);
+                if(value.ID == tmpObj.NAMESPACE_ID) {
+                    area = value.ID + ". " + value.NAME;
+                    console.log(area);
+                }
+                count++;
+            });
+            $scope.place = {
+                placeDescription: tmpObj.DESCRIPTION,
+                placeName: tmpObj.NAME,
+                placeArea: area,
+                advertContent: tmpObj.ADVERT,
+                eventName: tmpObj.EVENT_NAME,
+                eventContent: tmpObj.EVENT_CONTENT,
+                eventEnd: new Date(tmpObj.EVENT_END)
+            };
+            console.log(response);
+        }
+    }, function (error) {
+        console.log(error);
+        if (error.status == "401" || error.status == "403") {
+            $cookies.remove("session_token");
+            $cookies.remove("userid");
+            $location.path("/login");
+        }
+    });
+
+
+    this.editPlace = function() {
+        console.log($scope.place);
+    };
+
+    NgMap.getMap().then(function (map) {
+        vm.map = map;
+        google.maps.event.trigger(map, 'resize');
+    });
+
+    this.placeMarker = function (e) {
+        var tmp = e.latLng;
+        latitude.value = tmp.lat();
+        longitude.value = tmp.lng();
+        lat = tmp.lat();
+        lng = tmp.lng();
+    }
 });
 
 var ModalInstanceCtrl = function ($scope, $uibModalInstance) {
