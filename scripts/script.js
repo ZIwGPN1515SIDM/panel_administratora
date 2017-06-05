@@ -1,15 +1,15 @@
-var app = angular.module('app', ['ui.bootstrap', 'components', "ngRoute", "ngCookies", "ngMap"]);
+var app = angular.module('app', ['ui.bootstrap', 'components', "ngRoute", "ngCookies", "ngMap", "ngMaterial", "ngAnimate"]);
 
 var categoryList = [];
 var areaList = [];
 var tmpId = -1;
-var photoMode = -1; //1 - PLACE, 2 - NAMESPACE
+var placeMode = -1; //1 - PLACE, 2 - NAMESPACE
 var tmpObj = {};
 //Konfiguracja widoków
 app.config(function ($routeProvider) {
     $routeProvider
         .when("/", {
-            templateUrl: "view/startPage.htm"
+            templateUrl: "view/placeList.htm"
         })
         .when("/placeList", {
             templateUrl: "view/placeList.htm"
@@ -44,6 +44,15 @@ app.config(function ($routeProvider) {
         .when("/editNamespace", {
             templateUrl: "view/editNamespace.htm"
         })
+        .when("/commentsList", {
+            templateUrl: "view/commentsList.htm"
+        })
+        .when("/namespaceStatistics", {
+            templateUrl: "view/namespaceStatistics.htm"
+        })
+        .when("/placeStatistics", {
+            templateUrl: "view/placeStatistics.htm"
+        })
 });
 
 //Kontrolery
@@ -76,19 +85,16 @@ app.controller('LoginController', function ($scope, $http, $cookies, $location, 
         $http.post("http://graymanix.ovh/api/v2/login?api_key=bf980aeea5db5fb03ddafb29a4375d2497b91d81ac836a030abfef9a5573e994", JSON.stringify(tmp))
             .then(function (response) {
                 if (response.status == "200" && response.data.LICENSE == true) {
-                    console.log(response.data);
                     $cookies.put("session_token", response.data.session_token);
                     $cookies.put("userid", response.data.USERSID);
                     $location.path("/");
                 } else {
-                    console.log(response.data);
                     $cookies.put("session_token", response.data.session_token);
                     $cookies.put("userid", response.data.USERSID);
                     $location.path("/license");
                 }
             }, function (error) {
                 openError();
-                console.log(error);
             })
     };
 
@@ -112,15 +118,11 @@ app.controller('RegisterController', function ($scope, $http, $cookies, $locatio
             name: firstName + "_" + lastName,
             email: email
         };
-        console.log(JSON.stringify(tmp));
         $http.post("http://graymanix.ovh/api/v2/register?api_key=bf980aeea5db5fb03ddafb29a4375d2497b91d81ac836a030abfef9a5573e994", JSON.stringify(tmp)).then(function (response) {
             if (response.status == "200") {
                 $location.path("/registerSuccess");
             }
         }, function (error) {
-            console.log(error);
-            console.log(error.data.error);
-            console.log(error.data.error.message);
             if (error.status == "401") {
                 $cookies.remove("session_token");
                 $location.path("/login");
@@ -180,27 +182,38 @@ app.controller('NamespaceTableController', function ($scope, $http, $location, $
 
     this.photos = function (namespace) {
         tmpId = namespace.ID;
-        photoMode = 2;
+        placeMode = 2;
         $location.path("/photoList");
     };
 
     this.edit = function (namespace) {
         tmpObj = namespace;
-        console.log(namespace);
         $location.path("/editNamespace");
     };
+
+    this.showNamespaceComments = function (namespace) {
+        tmpId = namespace.ID;
+        placeMode = 2;
+        $location.path("/commentsList");
+    };
+
+    this.statistics = function (namespace) {
+        tmpId = namespace.ID;
+        tmpObj = namespace;
+        placeMode = 2;
+        console.log(namespace);
+        $location.path("/namespaceStatistics");
+    }
 });
 
 app.controller('PlaceTableController', function ($scope, $http, $location, $cookies, $uibModal) {
 
     $http.get("http://graymanix.ovh/api/v2/panel/place?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff", {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
         .then(function (response) {
-            console.log(response);
             if (response.status == "200") {
                 $scope.names = response.data.resource;
             }
         }, function (error) {
-            console.log(error);
             if (error.status == "401" || error.status == "403") {
                 $cookies.remove("session_token");
                 $cookies.remove("userid");
@@ -214,7 +227,7 @@ app.controller('PlaceTableController', function ($scope, $http, $location, $cook
 
     this.photos = function (place) {
         tmpId = place.ID;
-        photoMode = 1;
+        placeMode = 1;
         $location.path("/photoList");
     };
 
@@ -222,6 +235,20 @@ app.controller('PlaceTableController', function ($scope, $http, $location, $cook
         tmpObj = place;
         $location.path("/editPlace");
     };
+
+    this.showPlaceComments = function (place) {
+        tmpId = place.ID;
+        placeMode = 1;
+        $location.path("/commentsList");
+    };
+
+    this.statistics = function (place) {
+        tmpId = place.ID;
+        tmpObj = place;
+        placeMode = 1;
+        console.log(place);
+        $location.path("/placeStatistics");
+    }
 });
 
 app.controller('LicenseController', function ($scope, $http, $location, $cookies, $uibModal) {
@@ -234,16 +261,13 @@ app.controller('LicenseController', function ($scope, $http, $location, $cookies
                 }
             ]
         };
-        console.log(JSON.stringify(req));
         $http.post("http://graymanix.ovh/api/v2/license/add?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff",
             req, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
             .then(function (response) {
-                console.log(response);
                 if (response.status == "200") {
                     $location.path("/");
                 }
             }, function (error) {
-                console.log(error);
                 if (error.status == "401" || error.status == "403") {
                     $cookies.remove("session_token");
                     $cookies.remove("userid");
@@ -268,7 +292,6 @@ app.controller('AddPlaceController', function ($scope, $http, $location, $cookie
             angular.forEach(response.data.resource, function (value, key) {
                 areaList.push(value.ID + ". " + value.NAME);
             });
-            console.log(response);
         }
     });
 
@@ -288,12 +311,19 @@ app.controller('AddPlaceController', function ($scope, $http, $location, $cookie
                     }
                 ]
             };
-            console.log(JSON.stringify(req));
 
             $http.post("http://graymanix.ovh/api/v2/panel/place/add?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff",
                 req, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
                 .then(function (response) {
-                    console.log(response);
+                    if (response.status == "200") {
+                        $location.path("/placeList");
+                    }
+                }, function (error) {
+                    if (error.status == "401" || error.status == "403") {
+                        $cookies.remove("session_token");
+                        $cookies.remove("userid");
+                        $location.path("/login");
+                    }
                 });
         } else {
             //TODO
@@ -302,7 +332,7 @@ app.controller('AddPlaceController', function ($scope, $http, $location, $cookie
 
 });
 
-app.controller('AddNamespaceController', function ($scope, $http, $location, $cookies, $uibModal, NgMap) {
+app.controller('AddNamespaceController', function ($scope, $http, $location, $cookies, $uibModal, $timeout, NgMap) {
 
     var vm = this;
     var lng = 0, lat = 0;
@@ -316,7 +346,6 @@ app.controller('AddNamespaceController', function ($scope, $http, $location, $co
             angular.forEach(response.data.categories, function (value, key) {
                 categoryList.push(value.ID + ". " + value.NAME);
             });
-            console.log(categoryList);
         }
     });
 
@@ -339,15 +368,18 @@ app.controller('AddNamespaceController', function ($scope, $http, $location, $co
                 ]
             };
 
-            console.log(placeCategory.value.substring(7, 8));
-            console.log(JSON.stringify(req));
-
             $http.post("http://graymanix.ovh/api/v2/panel/namespace/add?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff",
                 req, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
                 .then(function (response) {
-                    console.log(response);
+                    if (response.status == "200") {
+                        $location.path("/placeList");
+                    }
                 }, function (error) {
-                    console.log(error);
+                    if (error.status == "401" || error.status == "403") {
+                        $cookies.remove("session_token");
+                        $cookies.remove("userid");
+                        $location.path("/login");
+                    }
                 });
         } else {
             //TODO
@@ -356,7 +388,9 @@ app.controller('AddNamespaceController', function ($scope, $http, $location, $co
 
     NgMap.getMap().then(function (map) {
         vm.map = map;
-        google.maps.event.trigger(map, 'resize');
+        var center = vm.map.getCenter();
+        google.maps.event.trigger(vm.map, 'resize');
+        vm.map.setCenter(center);
     });
 
     this.placeMarker = function (e) {
@@ -371,10 +405,9 @@ app.controller('AddNamespaceController', function ($scope, $http, $location, $co
 app.controller('AddPhotoController', function ($scope, $http, $location, $cookies) {
 
     this.addPhoto = function (link) {
-        console.log(link);
         var payload = {};
         var url = "";
-        if (photoMode == 1) {
+        if (placeMode == 1) {
             payload = {
                 resource: [
                     {
@@ -404,7 +437,6 @@ app.controller('AddPhotoController', function ($scope, $http, $location, $cookie
                     $location.path("/photoList");
                 }
             }, function (error) {
-                console.log(error);
                 if (error.status == "401" || error.status == "403") {
                     $cookies.remove("session_token");
                     $cookies.remove("userid");
@@ -421,27 +453,23 @@ app.controller('AddPhotoController', function ($scope, $http, $location, $cookie
 
 app.controller('PhotoListController', function ($scope, $http, $location, $cookies) {
 
-    console.log(tmpId);
-
-    var tableName = photoMode == 1 ? "PLACES_PHOTOS" : "NAMESPACES_PHOTOS";
-    var filter = photoMode == 1 ? ("PLACE_ID%3D" + tmpId) : ("NAMESPACE_ID%3D" + tmpId);
+    var tableName = placeMode == 1 ? "PLACES_PHOTOS" : "NAMESPACES_PHOTOS";
+    var filter = placeMode == 1 ? ("PLACE_ID%3D" + tmpId) : ("NAMESPACE_ID%3D" + tmpId);
 
     var url = "http://graymanix.ovh/api/v2/sidm/_table/" + tableName + "?filter=" + filter + "&api_key=486bcd2b0b7cc55fbc3c16f1aadf041686d9cf68ce726b55c7c4012bddaab0fe";
 
-    console.log(url);
-    $http.get(url).then(function (response) {
-        if (response.status == "200") {
-            $scope.names = response.data.resource;
-            console.log(response);
-        }
-    }, function (error) {
-        console.log(error);
-        if (error.status == "401" || error.status == "403") {
-            $cookies.remove("session_token");
-            $cookies.remove("userid");
-            $location.path("/login");
-        }
-    });
+    $http.get(url, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200") {
+                $scope.names = response.data.resource;
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
 
 
     this.addPhoto = function () {
@@ -449,15 +477,6 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
     };
 
     this.delete = function (row) {
-        console.log(row);
-        var url = "";
-        if (photoMode == 1) {
-            url = "http://graymanix.ovh/api/v2/sidm/_table/PLACES_PHOTOS?api_key=486bcd2b0b7cc55fbc3c16f1aadf041686d9cf68ce726b55c7c4012bddaab0fe";
-        }
-        else {
-            url = "http://graymanix.ovh/api/v2/sidm/_table/NAMESPACES_PHOTOS?api_key=486bcd2b0b7cc55fbc3c16f1aadf041686d9cf68ce726b55c7c4012bddaab0fe";
-        }
-
         var resource = {
             resource: [
                 {
@@ -465,8 +484,7 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
                 }
             ]
         };
-        console.log(resource);
-        console.log(url);
+
         $http.post(url, resource, {headers: {'X-HTTP-METHOD': 'DELETE'}})
             .then(function (response) {
                 $http.get(url).then(function (response) {
@@ -474,11 +492,9 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
                         $scope.names = [];
                         $scope.names.length = 0;
                         $scope.names = response.data.resource;
-                        console.log(response);
                     }
                 });
             }, function (error) {
-                console.log(error);
                 if (error.status == "401" || error.status == "403") {
                     $cookies.remove("session_token");
                     $cookies.remove("userid");
@@ -492,21 +508,18 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
 app.controller('EditNamespaceController', function ($scope, $http, $location, $cookies, NgMap) {
 
     var vm = this;
-    var lng = 0, lat = 0;
+    var lng = tmpObj.LONGITUDE, lat = tmpObj.LATITUDE;
     $scope.categories = categoryList;
 
     $http.get("http://graymanix.ovh/api/v2/category?api_key=be503ed4e9249384e58aad5d34ba46acbad352350b19050b7410ea1049dbef77").then(function (response) {
         if (response.status == "200") {
             categoryList.length = 0;
-            categoryList.push("-- Wybierz kategorię --");
-            $scope.editNamespaceForm.placeCategory = "-- Wybierz kategorię --";
             var count = 0;
             var cat = "";
             angular.forEach(response.data.categories, function (value, key) {
                 categoryList.push(value.ID + ". " + value.NAME);
-                if(value.ID == tmpObj.CATEGORY_ID) {
+                if (value.ID == tmpObj.CATEGORY_ID) {
                     cat = value.ID + ". " + value.NAME;
-                    console.log(cat);
                 }
                 count++;
             });
@@ -523,7 +536,6 @@ app.controller('EditNamespaceController', function ($scope, $http, $location, $c
             };
         }
     }, function (error) {
-        console.log(error);
         if (error.status == "401" || error.status == "403") {
             $cookies.remove("session_token");
             $cookies.remove("userid");
@@ -531,9 +543,118 @@ app.controller('EditNamespaceController', function ($scope, $http, $location, $c
         }
     });
 
-    this.editNamespace = function() {
-        console.log($scope.namespace);
-        console.log(eventEnd.value)
+    this.editNamespace = function () {
+        var req = {
+            resource: [
+                {
+                    ID: tmpObj.ID,
+                    NAME: placeName.value,
+                    DESCRIPTION: placeDescription.value,
+                    EVENT_CONTENT: eventContent.value,
+                    EVENT_NAME: eventName.value,
+                    EVENT_END: eventEnd.value,
+                    ADVERT: advertContent.value,
+                    LATITUDE: lat,
+                    LONGITUDE: lng,
+                    CATEGORY_ID: placeCategory.value.substring(7, 8)
+                }
+            ]
+        };
+
+        $http.post("http://graymanix.ovh/api/v2/sidm/_table/NAMESPACES?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff",
+            req, {headers: {'X-HTTP-METHOD': 'PATCH'}})
+            .then(function (response) {
+                if (response.status == "200") {
+                    $location.path("/placeList");
+                }
+            }, function (error) {
+                if (error.status == "401" || error.status == "403") {
+                    $cookies.remove("session_token");
+                    $cookies.remove("userid");
+                    $location.path("/login");
+                }
+            });
+
+    };
+
+    NgMap.getMap().then(function (map) {
+        vm.map = map;
+        google.maps.event.trigger(vm.map, 'resize');
+        vm.map.setCenter({lat: tmpObj.LATITUDE, lng: tmpObj.LONGITUDE});
+        vm.map.setZoom(16);
+    });
+
+    this.placeMarker = function (e) {
+        var tmp = e.latLng;
+        latitude.value = tmp.lat();
+        longitude.value = tmp.lng();
+        lat = tmp.lat();
+        lng = tmp.lng();
+    }
+});
+
+app.controller('EditPlaceController', function ($scope, $http, $location, $cookies, NgMap) {
+
+    $scope.areas = areaList;
+
+    $http.get("http://graymanix.ovh/api/v2/sidm/_table/NAMESPACES?fields=ID%2C%20NAME&api_key=486bcd2b0b7cc55fbc3c16f1aadf041686d9cf68ce726b55c7c4012bddaab0fe").then(function (response) {
+        if (response.status == "200") {
+            areaList.length = 0;
+            var count = 0;
+            var area = "";
+            angular.forEach(response.data.resource, function (value, key) {
+                areaList.push(value.ID + ". " + value.NAME);
+                if (value.ID == tmpObj.NAMESPACE_ID) {
+                    area = value.ID + ". " + value.NAME;
+                }
+                count++;
+            });
+            $scope.place = {
+                placeDescription: tmpObj.DESCRIPTION,
+                placeName: tmpObj.NAME,
+                placeArea: area,
+                advertContent: tmpObj.ADVERT,
+                eventName: tmpObj.EVENT_NAME,
+                eventContent: tmpObj.EVENT_CONTENT,
+                eventEnd: new Date(tmpObj.EVENT_END)
+            };
+        }
+    }, function (error) {
+        if (error.status == "401" || error.status == "403") {
+            $cookies.remove("session_token");
+            $cookies.remove("userid");
+            $location.path("/login");
+        }
+    });
+
+    this.editPlace = function () {
+        var req = {
+            resource: [
+                {
+                    ID: tmpObj.ID,
+                    NAME: placeName.value,
+                    DESCRIPTION: placeDescription.value,
+                    EVENT_CONTENT: eventContent.value,
+                    EVENT_NAME: eventName.value,
+                    EVENT_END: eventEnd.value,
+                    ADVERT: advertContent.value,
+                    NAMESPACE_ID: placeArea.value.substring(7, 8)
+                }
+            ]
+        };
+        $http.post("http://graymanix.ovh/api/v2/sidm/_table/PLACES?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff",
+            req, {headers: {'X-HTTP-METHOD': 'PATCH'}})
+            .then(function (response) {
+                if (response.status == "200") {
+                    $location.path("/placeList");
+                }
+            }, function (error) {
+                if (error.status == "401" || error.status == "403") {
+                    $cookies.remove("session_token");
+                    $cookies.remove("userid");
+                    $location.path("/login");
+                }
+            });
     };
 
     NgMap.getMap().then(function (map) {
@@ -550,65 +671,240 @@ app.controller('EditNamespaceController', function ($scope, $http, $location, $c
     }
 });
 
-app.controller('EditPlaceController', function ($scope, $http, $location, $cookies, NgMap) {
+app.controller('CommentsListController', function ($scope, $http, $location, $cookies, $uibModal) {
 
-    var vm = this;
-    var lng = 0, lat = 0;
-    $scope.areas = areaList;
+    var url = "";
 
-    console.log(tmpObj);
+    if (placeMode == 1) {
+        url = "http://graymanix.ovh/api/v2/comments?type=place&id=" + tmpId + "&api_key=be503ed4e9249384e58aad5d34ba46acbad352350b19050b7410ea1049dbef77"
+    } else if (placeMode == 2) {
+        url = "http://graymanix.ovh/api/v2/comments?type=namespace&id=" + tmpId + "&api_key=be503ed4e9249384e58aad5d34ba46acbad352350b19050b7410ea1049dbef77"
+    }
 
-    $http.get("http://graymanix.ovh/api/v2/sidm/_table/NAMESPACES?fields=ID%2C%20NAME&api_key=486bcd2b0b7cc55fbc3c16f1aadf041686d9cf68ce726b55c7c4012bddaab0fe").then(function (response) {
-        if (response.status == "200") {
-            areaList.length = 0;
-            areaList.push("-- Wybierz obszar --");
-            $scope.editPlaceForm.placeArea = "-- Wybierz obszar --";
-            var count = 0;
-            var area = "";
-            angular.forEach(response.data.resource, function (value, key) {
-                areaList.push(value.ID + ". " + value.NAME);
-                if(value.ID == tmpObj.NAMESPACE_ID) {
-                    area = value.ID + ". " + value.NAME;
-                    console.log(area);
+    $http.get(url, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200") {
+                $scope.names = response.data.comments;
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+
+    this.back = function () {
+        $location.path("/placeList")
+    }
+});
+
+app.controller('PlaceStatisticsController', function ($scope, $http, $location, $cookies, $uibModal) {
+
+    $scope.name = tmpObj.NAME;
+    var startUrl = "http://graymanix.ovh/api/v2/sidm/_table/PLACES_STATISTICS_";
+    var endUrl = "?filter=PLACE_INSTANCE%3D" + tmpObj.INSTANCE + "&api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff";
+
+    $http.get(startUrl + 7 + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200" && response.data.resource.length > 0) {
+                $scope.seven = {
+                    visits: response.data.resource[0].VISITS,
+                    sumTime: (response.data.resource[0].SUM_TIME_SPENT / 60).toFixed(2),
+                    avgTime: (response.data.resource[0].AVG_TIME_SPENT / 60).toFixed(2)
+                };
+            } else {
+                $scope.seven = {
+                    visits: 0,
+                    sumTime: 0,
+                    avgTime: 0
+                };
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+
+    $http.get(startUrl + 14 + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200") {
+                if (response.status == "200" && response.data.resource.length > 0) {
+                    $scope.fourteen = {
+                        visits: response.data.resource[0].VISITS,
+                        sumTime: (response.data.resource[0].SUM_TIME_SPENT / 60).toFixed(2),
+                        avgTime: (response.data.resource[0].AVG_TIME_SPENT / 60).toFixed(2)
+                    };
+                } else {
+                    $scope.fourteen = {
+                        visits: 0,
+                        sumTime: 0,
+                        avgTime: 0
+                    };
                 }
-                count++;
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+
+    $http.get(startUrl + 30 + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200" && response.data.resource.length > 0) {
+                $scope.thirty = {
+                    visits: response.data.resource[0].VISITS,
+                    sumTime: (response.data.resource[0].SUM_TIME_SPENT / 60).toFixed(2),
+                    avgTime: (response.data.resource[0].AVG_TIME_SPENT / 60).toFixed(2)
+                };
+            } else {
+                $scope.thirty = {
+                    visits: 0,
+                    sumTime: 0,
+                    avgTime: 0
+                };
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+})
+;
+
+app.controller('NamespaceStatisticsController', function ($scope, $http, $location, $cookies, $uibModal, $window) {
+
+    $scope.name = tmpObj.NAME;
+    var startUrl = "http://graymanix.ovh/api/v2/sidm/_table/NAMESPACES_STATISTICS_";
+    var endUrl = "?filter=NAMESPACE_INSTANCE%3D" + tmpObj.INSTANCE + "&api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff";
+
+    $http.get(startUrl + 7 + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200") {
+                $scope.seven = {
+                    visits: response.data.resource[0].VISITS,
+                    sumTime: (response.data.resource[0].SUM_TIME_SPENT / 60).toFixed(2),
+                    avgTime: (response.data.resource[0].AVG_TIME_SPENT / 60).toFixed(2)
+                };
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+
+    $http.get(startUrl + 14 + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200") {
+                $scope.fourteen = {
+                    visits: response.data.resource[0].VISITS,
+                    sumTime: (response.data.resource[0].SUM_TIME_SPENT / 60).toFixed(2),
+                    avgTime: (response.data.resource[0].AVG_TIME_SPENT / 60).toFixed(2)
+                };
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+
+    $http.get(startUrl + 30 + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+        .then(function (response) {
+            if (response.status == "200") {
+                $scope.thirty = {
+                    visits: response.data.resource[0].VISITS,
+                    sumTime: (response.data.resource[0].SUM_TIME_SPENT / 60).toFixed(2),
+                    avgTime: (response.data.resource[0].AVG_TIME_SPENT / 60).toFixed(2)
+                }
+            }
+        }, function (error) {
+            if (error.status == "401" || error.status == "403") {
+                $cookies.remove("session_token");
+                $cookies.remove("userid");
+                $location.path("/login");
+            }
+        });
+
+    this.generatePdf = function (days) {
+
+        var tmp = days == 7 ? $scope.seven : (days == 14 ? $scope.fourteen : $scope.thirty);
+        var startUrl = "http://graymanix.ovh/api/v2/sidm/_table/PLACES_STATISTICS_";
+        var endUrl = "?filter=NAMESPACE_INSTANCE%3D" + tmpObj.INSTANCE + "&api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff";
+
+        var html = "<html>" +
+            "<head></head>" +
+            "<body>" +
+            "</br></br></br></br>" +
+            "<table align=\"center\" style='border-collapse: collapse; border: 1px solid black; width: 50%;'>" +
+            "<th colspan=\"2\">" +
+            tmpObj.NAME +
+            "</th>" +
+            "<tr><td style='border: 1px solid black;'>Ilość odwiedzin</td>" +
+            "<td style='border: 1px solid black;'>" +
+            tmp.visits +
+            "</td></tr>" +
+            "<tr><td style='border: 1px solid black;'>Łączny czas pobytów</td>" +
+            "<td style='border: 1px solid black;'>" +
+            tmp.sumTime +
+            " h</td></tr>" +
+            "<tr><td style='border: 1px solid black;'>Średni czas pobytu</td>" +
+            "<td style='border: 1px solid black;'>" +
+            tmp.avgTime +
+            " h</td></tr></table></br></br>";
+
+        $http.get(startUrl + days + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+            .then(function (response) {
+                if (response.status == "200") {
+                    console.log(response);
+                    html += "<table align=\"center\" style='border-collapse: collapse; border: 1px solid black; width: 80%;'>" +
+                        "<tr>" +
+                        "<th></th>" +
+                        "<th style='border: 1px solid black;'>Ilość odwiedzin</th>" +
+                        "<th style='border: 1px solid black;'>Łączny czas pobytów</th>" +
+                        "<th style='border: 1px solid black;'>Średni czas pobytu</th>" +
+                        "</tr>";
+
+                    angular.forEach(response.data.resource, function (value, key) {
+                        //areaList.push(value.ID + ". " + value.NAME);
+                        html += "<tr>" +
+                            "<td style='border: 1px solid black;'>" + value.NAME + "</td>" +
+                            "<td style='border: 1px solid black;'>" + value.VISITS + "</td>" +
+                            "<td style='border: 1px solid black;'>" + value.SUM_TIME_SPENT + "</td>" +
+                            "<td style='border: 1px solid black;'>" + value.AVG_TIME_SPENT + "</td>" +
+                            "</tr>";
+                    });
+                    html += "</table></body>";
+                    var msg = {
+                        html: html,
+                        namespaceId: tmpObj.ID
+                    };
+                    $http.post("http://graymanix.ovh:8080/pdf", JSON.stringify(msg), '')
+                        .then(function (response) {
+                            console.log(response);
+                            $window.open(response.data.url, '_blank');
+                            });
+                    console.log(JSON.stringify(msg));
+
+                }
+            }, function (error) {
+                if (error.status == "401" || error.status == "403") {
+                    $cookies.remove("session_token");
+                    $cookies.remove("userid");
+                    $location.path("/login");
+                }
             });
-            $scope.place = {
-                placeDescription: tmpObj.DESCRIPTION,
-                placeName: tmpObj.NAME,
-                placeArea: area,
-                advertContent: tmpObj.ADVERT,
-                eventName: tmpObj.EVENT_NAME,
-                eventContent: tmpObj.EVENT_CONTENT,
-                eventEnd: new Date(tmpObj.EVENT_END)
-            };
-            console.log(response);
-        }
-    }, function (error) {
-        console.log(error);
-        if (error.status == "401" || error.status == "403") {
-            $cookies.remove("session_token");
-            $cookies.remove("userid");
-            $location.path("/login");
-        }
-    });
 
 
-    this.editPlace = function() {
-        console.log($scope.place);
-    };
-
-    NgMap.getMap().then(function (map) {
-        vm.map = map;
-        google.maps.event.trigger(map, 'resize');
-    });
-
-    this.placeMarker = function (e) {
-        var tmp = e.latLng;
-        latitude.value = tmp.lat();
-        longitude.value = tmp.lng();
-        lat = tmp.lat();
-        lng = tmp.lng();
     }
 });
 

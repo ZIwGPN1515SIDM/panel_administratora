@@ -21,72 +21,75 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
              ng-controller="EditNamespaceController as editNamespaceCtrl">
             <form name="editNamespaceForm" ng-submit="editNamespaceCtrl.editNamespace()" role="form">
-                <tabs>
-                    <pane title="Dane">
-                        <div style="margin-top: 25px" class="form-group"
-                             ng-class="{ 'has-error': editNamespaceForm.placeName.$dirty && editNamespaceForm.placeName.$error.required }">
-                            <label for="placeName">Nazwa:</label>
-                            <input type="text" name="placeName" id="placeName" class="form-control"
-                                   ng-model="namespace.placeName" required/>
-                        </div>
-                        <div class="form-group"
-                             ng-class="{ 'has-error': editNamespaceForm.placeName.$dirty && editNamespaceForm.placeName.$error.required }">
-                            <label for="placeDescription">Opis:</label>
-                            <textarea class="form-control" rows="4" maxlength="1500" id="placeDescription"
-                                      ng-model="namespace.placeDescription" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="placeCategory">Kategoria</label>
-                            <select class="form-control" ng-model="namespace.placeCategory" id="placeCategory"
-                                    name="placeCategory"
-                                    ng-options="o as o for o in categories">
-                            </select>
-                        </div>
-                    </pane>
+                <md-content>
+                    <md-tabs md-dynamic-height md-border-bottom>
+                        <md-tab label="Dane">
+                            <div style="margin-top: 25px" class="form-group"
+                                 ng-class="{ 'has-error': editNamespaceForm.placeName.$dirty && editNamespaceForm.placeName.$error.required }">
+                                <label for="placeName">Nazwa:</label>
+                                <input type="text" name="placeName" id="placeName" class="form-control"
+                                       ng-model="namespace.placeName" required/>
+                            </div>
+                            <div class="form-group"
+                                 ng-class="{ 'has-error': editNamespaceForm.placeName.$dirty && editNamespaceForm.placeName.$error.required }">
+                                <label for="placeDescription">Opis:</label>
+                                <textarea class="form-control" rows="4" maxlength="1500" id="placeDescription"
+                                          ng-model="namespace.placeDescription" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="placeCategory">Kategoria</label>
+                                <select class="form-control" ng-model="namespace.placeCategory" id="placeCategory"
+                                        name="placeCategory"
+                                        ng-options="o as o for o in categories">
+                                </select>
+                            </div>
+                        </md-tab>
 
-                    <pane title="Położenie">
-                        <ng-map id="map" zoom="11" center="[40.74, -74.18]" on-click="editNamespaceCtrl.placeMarker()"></ng-map>
-                        <label for="longitude">Długość:</label>
-                        <input type="text" name="longitude" id="longitude" class="form-control"
-                               ng-model="namespace.longitude"/>
-                        <label for="latitude">Szerokość</label>
-                        <input type="text" name="latitude" id="latitude" class="form-control"
-                               ng-model="namespace.latitude"/>
-                    </pane>
+                        <md-tab label="Położenie">
+                            <ng-map id="map"
+                                    on-click="editNamespaceCtrl.placeMarker()"></ng-map>
+                            <label for="longitude">Długość:</label>
+                            <input type="text" name="longitude" id="longitude" class="form-control"
+                                   ng-model="namespace.longitude"/>
+                            <label for="latitude">Szerokość</label>
+                            <input type="text" name="latitude" id="latitude" class="form-control"
+                                   ng-model="namespace.latitude"/>
+                        </md-tab>
 
-                    <pane title="Reklama">
-                        <div style="margin-top: 25px" class="form-group"
-                             ng-class="{ 'has-error': editNamespaceForm.advertContent.$dirty && editNamespaceForm.advertContent.$error.required }">
-                            <label for="advertContent">Treść:</label>
-                            <input type="text" name="advertContent" id="advertContent" class="form-control"
-                                   ng-model="namespace.advertContent"/>
-                        </div>
-                    </pane>
+                        <md-tab label="Reklama">
+                            <div style="margin-top: 25px" class="form-group"
+                                 ng-class="{ 'has-error': editNamespaceForm.advertContent.$dirty && editNamespaceForm.advertContent.$error.required }">
+                                <label for="advertContent">Treść:</label>
+                                <input type="text" name="advertContent" id="advertContent" class="form-control"
+                                       ng-model="namespace.advertContent"/>
+                            </div>
+                        </md-tab>
 
-                    <pane title="Event">
-                        <div style="margin-top: 25px" class="form-group"
-                             ng-class="{ 'has-error': editNamespaceForm.eventName.$dirty && editNamespaceForm.eventName.$error.required }">
-                            <label for="eventName">Nazwa:</label>
-                            <input type="text" name="eventName" id="eventName" class="form-control"
-                                   ng-model="namespace.eventName"/>
-                        </div>
-                        <div class="form-group"
-                             ng-class="{ 'has-error': editNamespaceForm.eventContent.$dirty && editNamespaceForm.eventContent.$error.required }">
-                            <label for="eventContent">Treść:</label>
-                            <input type="text" name="eventContent" id="eventContent" class="form-control"
-                                   ng-model="namespace.eventContent"/>
-                        </div>
-                        <div class="form-group"
-                             ng-class="{ 'has-error': editNamespaceForm.eventEnd.$dirty && editNamespaceForm.eventEnd.$error.required }">
-                            <label for="eventEnd">Nazwa:</label>
-                            <input type="date" name="eventEnd" id="eventEnd" class="form-control"
-                                   ng-model="namespace.eventEnd"/>
-                        </div>
-                    </pane>
-                </tabs>
+                        <md-tab label="Event">
+                            <div style="margin-top: 25px" class="form-group"
+                                 ng-class="{ 'has-error': editNamespaceForm.eventName.$dirty && editNamespaceForm.eventName.$error.required }">
+                                <label for="eventName">Nazwa:</label>
+                                <input type="text" name="eventName" id="eventName" class="form-control"
+                                       ng-model="namespace.eventName"/>
+                            </div>
+                            <div class="form-group"
+                                 ng-class="{ 'has-error': editNamespaceForm.eventContent.$dirty && editNamespaceForm.eventContent.$error.required }">
+                                <label for="eventContent">Treść:</label>
+                                <input type="text" name="eventContent" id="eventContent" class="form-control"
+                                       ng-model="namespace.eventContent"/>
+                            </div>
+                            <div class="form-group"
+                                 ng-class="{ 'has-error': editNamespaceForm.eventEnd.$dirty && editNamespaceForm.eventEnd.$error.required }">
+                                <label for="eventEnd">Nazwa:</label>
+                                <input type="date" name="eventEnd" id="eventEnd" class="form-control"
+                                       ng-model="namespace.eventEnd"/>
+                            </div>
+                        </md-tab>
+                    </md-tabs>
+                </md-content>
                 <div class="form-actions" style="text-align: right; margin-top: 10px">
                     <button type="submit" ng-disabled="editNamespaceForm.$invalid || editNamespaceForm.dataLoading"
-                            class="btn btn-primary">Dodaj
+                            class="btn btn-primary">Zapisz
                     </button>
                 </div>
             </form>

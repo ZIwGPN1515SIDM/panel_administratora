@@ -1,0 +1,43 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#login">SIDM</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="#placeList">Lista miejsc</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+            <div id="namespaces" class="panel panel-default" ng-app="app"
+                 style="margin-top: 0px; margin-bottom: 0px; overflow-y: auto; height: 68vh"
+                 ng-controller="CommentsListController as commentsListCtrl">
+
+                <table class="table">
+                    <tr>
+                        <td class="text-center" style="vertical-align:middle" width="5%"><b>#</b></td>
+                        <td class="text-center" style="vertical-align:middle" width="85%"><b>Komentarz</b></td>
+                        <td class="text-center" style="vertical-align:middle" width="10%"><b>Ocena</b></td>
+                    </tr>
+                    <tr ng-repeat="x in names">
+                        <td class="text-center" style="vertical-align:middle">{{ $index + 1 }}</td>
+                        <td class="text-center" style="vertical-align:middle">{{ x.CONTENT }}</td>
+                        <td class="text-center" style="vertical-align:middle">{{ x.SCORE }}</td>
+                    </tr>
+
+                </table>
+            </div>
+            <div ng-controller="CommentsListController as commentsListCtrl">
+                <button style="margin-top: 10px" class="btn btn-primary" ng-click="commentsListCtrl.back()">Powrót
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

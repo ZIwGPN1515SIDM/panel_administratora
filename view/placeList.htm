@@ -17,83 +17,102 @@
                 <li><a href="#placeList">Lista miejsc</a></li>
             </ul>
         </div>
+
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <tabs>
-                <pane title="Obszary">
-                    <div id="namespaces" class="panel panel-default" ng-app="app"
-                         style="margin-top: 0px; margin-bottom: 0px; overflow-y: auto; height: 68vh"
-                         ng-controller="NamespaceTableController as namespaceCtrl">
+            <md-content>
+                <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="Obszary">
+                        <div id="namespaces" class="panel panel-default" ng-app="app"
+                             style="margin-top: 0px; margin-bottom: 0px; overflow-y: auto; height: 68vh"
+                             ng-controller="NamespaceTableController as namespaceCtrl">
 
-                        <table class="table">
-                            <tr>
-                                <td class="text-center" style="vertical-align:middle" width="5%"><b>#</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="30%"><b>Nazwa</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="30%"><b>Kategoria</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="15%"><b>Ilość
-                                    komentarzy</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
-                                <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
-                            </tr>
-                            <tr ng-repeat="x in names">
-                                <td class="text-center" style="vertical-align:middle">{{ $index + 1 }}</td>
-                                <td class="text-center" style="vertical-align:middle">{{ x.NAME }}</td>
-                                <td class="text-center" style="vertical-align:middle">{{ x.CATEGORY.NAME }}</td>
-                                <td class="text-center" style="vertical-align:middle">{{ x.COMMENTS_COUNT }}</td>
-                                <td class="text-center" style="vertical-align:middle">
-                                    <button class="btn btn-xs" ng-click="namespaceCtrl.photos(x)">Zdjęcia
-                                    </button>
-                                </td>
-                                <td class="text-center" style="vertical-align:middle">
-                                    <button class="btn btn-xs" ng-click="namespaceCtrl.edit(x)">Edycja
-                                    </button>
-                                </td>
-                            </tr>
+                            <table class="table">
+                                <tr>
+                                    <td class="text-center" style="vertical-align:middle" width="5%"><b>#</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="25%"><b>Nazwa</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="25%"><b>Kategoria</b>
+                                    </td>
+                                    <td class="text-center" style="vertical-align:middle" width="15%"><b>Ilość
+                                        komentarzy</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
+                                </tr>
+                                <tr ng-repeat="x in names">
+                                    <td class="text-center" style="vertical-align:middle">{{ $index + 1 }}</td>
+                                    <td class="text-center" style="vertical-align:middle">{{ x.NAME }}</td>
+                                    <td class="text-center" style="vertical-align:middle">{{ x.CATEGORY.NAME }}</td>
+                                    <td class="text-center" style="vertical-align:middle" ng-click="namespaceCtrl.showNamespaceComments(x)">{{ x.COMMENTS_COUNT }}</td>
+                                    <td class="text-center" style="vertical-align:middle">
+                                        <button class="btn btn-xs" ng-click="namespaceCtrl.photos(x)">Zdjęcia
+                                        </button>
+                                    </td>
+                                    <td class="text-center" style="vertical-align:middle">
+                                        <button class="btn btn-xs" ng-click="namespaceCtrl.edit(x)">Edycja
+                                        </button>
+                                    </td>
+                                    <td class="text-center" style="vertical-align:middle">
+                                        <button class="btn btn-xs" ng-click="namespaceCtrl.statistics(x)">Statystyki
+                                        </button>
+                                    </td>
+                                </tr>
 
-                        </table>
-                    </div>
-                    <div ng-controller="NamespaceTableController as namespaceCtrl">
-                        <button style="margin-top: 10px" class="btn btn-primary" ng-click="namespaceCtrl.addNamespace()">Dodaj
-                        </button>
-                    </div>
-                </pane>
-                <pane title="Miejsca">
-                    <div id="places" class="panel panel-default" ng-app="app"
-                         style="margin-top: 0px; margin-bottom: 0px; overflow-y: auto; height: 68vh"
-                         ng-controller="PlaceTableController as placeCtrl">
+                            </table>
+                        </div>
+                        <div ng-controller="NamespaceTableController as namespaceCtrl">
+                            <button style="margin-top: 10px" class="btn btn-primary"
+                                    ng-click="namespaceCtrl.addNamespace()">Dodaj
+                            </button>
+                        </div>
+                    </md-tab>
+                    <md-tab label="Miejsca">
+                        <div id="places" class="panel panel-default" ng-app="app"
+                             style="margin-top: 0px; margin-bottom: 0px; overflow-y: auto; height: 68vh"
+                             ng-controller="PlaceTableController as placeCtrl">
 
-                        <table class="table">
-                            <tr>
-                                <td class="text-center" style="vertical-align:middle" width="5%"><b>#</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="30%"><b>Nazwa</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="30%"><b>Obszar</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="15%"><b>Ilość
-                                    komentarzy</b></td>
-                                <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
-                                <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
-                            </tr>
-                            <tr ng-repeat="x in names">
-                                <td class="text-center" style="vertical-align:middle">{{ $index + 1 }}</td>
-                                <td class="text-center" style="vertical-align:middle">{{ x.NAME }}</td>
-                                <td class="text-center" style="vertical-align:middle">{{ x.NAMESPACES_by_NAMESPACE_ID.NAME }}</td>
-                                <td class="text-center" style="vertical-align:middle">{{ x.COMMENTS_COUNT }}</td>
-                                <td class="text-center" style="vertical-align:middle">
-                                    <button class="btn btn-xs" ng-click="placeCtrl.photos(x)">Zdjęcia
-                                    </button>
-                                </td>
-                                <td class="text-center" style="vertical-align:middle">
-                                    <button class="btn btn-xs" ng-click="placeCtrl.edit(x)">Edycja
-                                    </button>
-                                </td>
-                            </tr>
+                            <table class="table">
+                                <tr>
+                                    <td class="text-center" style="vertical-align:middle" width="5%"><b>#</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="25%"><b>Nazwa</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="25%"><b>Obszar</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="15%"><b>Ilość
+                                        komentarzy</b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
+                                    <td class="text-center" style="vertical-align:middle" width="10%"><b></b></td>
 
-                        </table>
-                    </div>
-                    <div ng-controller="PlaceTableController as placeCtrl">
-                        <button style="margin-top: 10px" class="btn btn-primary" ng-click="placeCtrl.addPlace()">Dodaj
-                        </button>
-                    </div>
-                </pane>
-            </tabs>
+                                </tr>
+                                <tr ng-repeat="x in names">
+                                    <td class="text-center" style="vertical-align:middle">{{ $index + 1 }}</td>
+                                    <td class="text-center" style="vertical-align:middle">{{ x.NAME }}</td>
+                                    <td class="text-center" style="vertical-align:middle">{{
+                                        x.NAMESPACES_by_NAMESPACE_ID.NAME }}
+                                    </td>
+                                    <td class="text-center" style="vertical-align:middle" ng-click="placeCtrl.showPlaceComments(x)">{{ x.COMMENTS_COUNT }}</td>
+                                    <td class="text-center" style="vertical-align:middle">
+                                        <button class="btn btn-xs" ng-click="placeCtrl.photos(x)">Zdjęcia
+                                        </button>
+                                    </td>
+                                    <td class="text-center" style="vertical-align:middle">
+                                        <button class="btn btn-xs" ng-click="placeCtrl.edit(x)">Edycja
+                                        </button>
+                                    </td>
+                                    <td class="text-center" style="vertical-align:middle">
+                                        <button class="btn btn-xs" ng-click="placeCtrl.statistics(x)">Statystyki
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                        <div ng-controller="PlaceTableController as placeCtrl">
+                            <button style="margin-top: 10px" class="btn btn-primary" ng-click="placeCtrl.addPlace()">
+                                Dodaj
+                            </button>
+                        </div>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
         </div>
     </div>
 </div>
