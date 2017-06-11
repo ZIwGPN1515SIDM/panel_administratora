@@ -12,38 +12,32 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
-                <li><a href="#placeList">Lista miejsc</a></li>
-            </ul>
-        </div>
-
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+        <div class="main"
              ng-controller="AddNamespaceController as addNamespaceCtrl">
             <form name="addNamespaceForm" ng-submit="addNamespaceCtrl.addNamespace()" role="form">
                 <md-content>
-                    <md-tabs md-dynamic-height md-border-bottom >
+                    <md-tabs md-dynamic-height md-border-bottom>
                         <md-tab label="Dane">
-                                <div style="margin-top: 25px" class="form-group"
-                                     ng-class="{ 'has-error': addNamespaceForm.placeName.$dirty && addNamespaceForm.placeName.$error.required }">
-                                    <label for="placeName">Nazwa:</label>
-                                    <input type="text" name="placeName" id="placeName" class="form-control"
-                                           ng-model="addNamespaceCtrl.placeName" required/>
-                                </div>
-                                <div class="form-group"
-                                     ng-class="{ 'has-error': addNamespaceForm.placeName.$dirty && addNamespaceForm.placeName.$error.required }">
-                                    <label for="placeDescription">Opis:</label>
-                                    <textarea class="form-control" rows="4" maxlength="1500" id="placeDescription"
-                                              ng-model="addNamespaceForm.placeDescription" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="placeCategory">Kategoria</label>
-                                    <select class="form-control" ng-model="addNamespaceForm.placeCategory"
-                                            id="placeCategory"
-                                            name="placeCategory"
-                                            ng-options="o as o for o in categories">
-                                    </select>
-                                </div>
+                            <div style="margin-top: 25px" class="form-group"
+                                 ng-class="{ 'has-error': addNamespaceForm.placeName.$dirty && addNamespaceForm.placeName.$error.required }">
+                                <label for="placeName">Nazwa:</label>
+                                <input type="text" name="placeName" id="placeName" class="form-control"
+                                       ng-model="addNamespaceCtrl.placeName" required/>
+                            </div>
+                            <div class="form-group"
+                                 ng-class="{ 'has-error': addNamespaceForm.placeName.$dirty && addNamespaceForm.placeName.$error.required }">
+                                <label for="placeDescription">Opis:</label>
+                                <textarea class="form-control" rows="4" maxlength="1500" id="placeDescription"
+                                          ng-model="addNamespaceForm.placeDescription" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="placeCategory">Kategoria</label>
+                                <select class="form-control" ng-model="addNamespaceForm.placeCategory"
+                                        id="placeCategory"
+                                        name="placeCategory"
+                                        ng-options="o as o for o in categories">
+                                </select>
+                            </div>
                         </md-tab>
 
                         <md-tab label="Położenie">
@@ -91,6 +85,9 @@
                 <div class="form-actions" style="text-align: right; margin-top: 10px">
                     <button type="submit" ng-disabled="addNamespaceForm.$invalid || addNamespaceForm.dataLoading"
                             class="btn btn-primary">Dodaj
+                    </button>
+                    <button ng-click="addNamespaceCtrl.back()"
+                            class="btn btn-primary">Powrót
                     </button>
                 </div>
             </form>

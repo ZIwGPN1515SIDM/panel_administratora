@@ -159,16 +159,14 @@ app.controller('TopBarController', function ($scope, $http, $location, $cookies)
     }
 });
 
-app.controller('NamespaceTableController', function ($scope, $http, $location, $cookies, $uibModal) {
+app.controller('NamespaceTableController', function ($scope, $http, $location, $cookies) {
 
     $http.get("http://graymanix.ovh/api/v2/panel/namespace?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff", {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
         .then(function (response) {
-            console.log(response);
             if (response.status == "200") {
                 $scope.names = response.data.resource;
             }
         }, function (error) {
-            console.log(error);
             if (error.status == "401" || error.status == "403") {
                 $cookies.remove("session_token");
                 $cookies.remove("userid");
@@ -201,14 +199,14 @@ app.controller('NamespaceTableController', function ($scope, $http, $location, $
         tmpId = namespace.ID;
         tmpObj = namespace;
         placeMode = 2;
-        console.log(namespace);
         $location.path("/namespaceStatistics");
     }
 });
 
-app.controller('PlaceTableController', function ($scope, $http, $location, $cookies, $uibModal) {
+app.controller('PlaceTableController', function ($scope, $http, $location, $cookies) {
 
-    $http.get("http://graymanix.ovh/api/v2/panel/place?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff", {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
+    $http.get("http://graymanix.ovh/api/v2/panel/place?api_key=672294d58f2e2e7f1c14e83df65a8a59a8658c1eb91633d5c541115f3eac40ff",
+        {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
         .then(function (response) {
             if (response.status == "200") {
                 $scope.names = response.data.resource;
@@ -246,12 +244,11 @@ app.controller('PlaceTableController', function ($scope, $http, $location, $cook
         tmpId = place.ID;
         tmpObj = place;
         placeMode = 1;
-        console.log(place);
         $location.path("/placeStatistics");
     }
 });
 
-app.controller('LicenseController', function ($scope, $http, $location, $cookies, $uibModal) {
+app.controller('LicenseController', function ($scope, $http, $location, $cookies) {
     this.activateLicense = function (key) {
         var req = {
             resource: [
@@ -279,7 +276,7 @@ app.controller('LicenseController', function ($scope, $http, $location, $cookies
     }
 });
 
-app.controller('AddPlaceController', function ($scope, $http, $location, $cookies, $uibModal) {
+app.controller('AddPlaceController', function ($scope, $http, $location, $cookies) {
 
 
     $scope.areas = areaList;
@@ -328,6 +325,10 @@ app.controller('AddPlaceController', function ($scope, $http, $location, $cookie
         } else {
             //TODO
         }
+    };
+
+    this.back = function () {
+        $location.path("/placeList");
     }
 
 });
@@ -399,6 +400,10 @@ app.controller('AddNamespaceController', function ($scope, $http, $location, $co
         longitude.value = tmp.lng();
         lat = tmp.lat();
         lng = tmp.lng();
+    }
+
+    this.back = function () {
+        $location.path("/placeList");
     }
 });
 
@@ -503,6 +508,10 @@ app.controller('PhotoListController', function ($scope, $http, $location, $cooki
             })
     };
 
+    this.back = function () {
+        $location.path("/placeList");
+    }
+
 });
 
 app.controller('EditNamespaceController', function ($scope, $http, $location, $cookies, NgMap) {
@@ -590,6 +599,10 @@ app.controller('EditNamespaceController', function ($scope, $http, $location, $c
         longitude.value = tmp.lng();
         lat = tmp.lat();
         lng = tmp.lng();
+    };
+
+    this.back = function () {
+        $location.path("/placeList");
     }
 });
 
@@ -669,9 +682,13 @@ app.controller('EditPlaceController', function ($scope, $http, $location, $cooki
         lat = tmp.lat();
         lng = tmp.lng();
     }
+
+    this.back = function () {
+        $location.path("/placeList");
+    }
 });
 
-app.controller('CommentsListController', function ($scope, $http, $location, $cookies, $uibModal) {
+app.controller('CommentsListController', function ($scope, $http, $location, $cookies) {
 
     var url = "";
 
@@ -699,7 +716,7 @@ app.controller('CommentsListController', function ($scope, $http, $location, $co
     }
 });
 
-app.controller('PlaceStatisticsController', function ($scope, $http, $location, $cookies, $uibModal) {
+app.controller('PlaceStatisticsController', function ($scope, $http, $location, $cookies) {
 
     $scope.name = tmpObj.NAME;
     var startUrl = "http://graymanix.ovh/api/v2/sidm/_table/PLACES_STATISTICS_";
@@ -775,8 +792,11 @@ app.controller('PlaceStatisticsController', function ($scope, $http, $location, 
                 $location.path("/login");
             }
         });
-})
-;
+
+    this.back = function () {
+        $location.path("/placeList");
+    }
+});
 
 app.controller('NamespaceStatisticsController', function ($scope, $http, $location, $cookies, $uibModal, $window) {
 
@@ -845,6 +865,10 @@ app.controller('NamespaceStatisticsController', function ($scope, $http, $locati
             "<head></head>" +
             "<body>" +
             "</br></br></br></br>" +
+            "<h1 align=\"center\">Szczegółowe statystyki</h1>" +
+            "<h3 align=\"center\">" + tmpObj.NAME + "</h3></br>" +
+            "</br></br></br></br><ol>" +
+            "<li>Statystyki ogólne miejsca </br></br>" +
             "<table align=\"center\" style='border-collapse: collapse; border: 1px solid black; width: 50%;'>" +
             "<th colspan=\"2\">" +
             tmpObj.NAME +
@@ -860,13 +884,13 @@ app.controller('NamespaceStatisticsController', function ($scope, $http, $locati
             "<tr><td style='border: 1px solid black;'>Średni czas pobytu</td>" +
             "<td style='border: 1px solid black;'>" +
             tmp.avgTime +
-            " h</td></tr></table></br></br>";
+            " h</td></tr></table></li></br></br>";
 
         $http.get(startUrl + days + endUrl, {headers: {'x-dreamfactory-session-token': $cookies.get("session_token")}})
             .then(function (response) {
                 if (response.status == "200") {
-                    console.log(response);
-                    html += "<table align=\"center\" style='border-collapse: collapse; border: 1px solid black; width: 80%;'>" +
+                    html += "<li>Statystyki szczegółowe - miejsca należące do miejsca głównego</br></br>" +
+                        "<table align=\"center\" style='border-collapse: collapse; border: 1px solid black; width: 80%;'>" +
                         "<tr>" +
                         "<th></th>" +
                         "<th style='border: 1px solid black;'>Ilość odwiedzin</th>" +
@@ -875,26 +899,22 @@ app.controller('NamespaceStatisticsController', function ($scope, $http, $locati
                         "</tr>";
 
                     angular.forEach(response.data.resource, function (value, key) {
-                        //areaList.push(value.ID + ". " + value.NAME);
                         html += "<tr>" +
                             "<td style='border: 1px solid black;'>" + value.NAME + "</td>" +
                             "<td style='border: 1px solid black;'>" + value.VISITS + "</td>" +
-                            "<td style='border: 1px solid black;'>" + value.SUM_TIME_SPENT + "</td>" +
-                            "<td style='border: 1px solid black;'>" + value.AVG_TIME_SPENT + "</td>" +
+                            "<td style='border: 1px solid black;'>" + (value.SUM_TIME_SPENT / 60).toFixed(2) + " h</td>" +
+                            "<td style='border: 1px solid black;'>" + (value.AVG_TIME_SPENT / 60).toFixed(2) + " h</td>" +
                             "</tr>";
                     });
-                    html += "</table></body>";
+                    html += "</table></li></ol></body>";
                     var msg = {
                         html: html,
                         namespaceId: tmpObj.ID
                     };
                     $http.post("http://graymanix.ovh:8080/pdf", JSON.stringify(msg), '')
                         .then(function (response) {
-                            console.log(response);
                             $window.open(response.data.url, '_blank');
-                            });
-                    console.log(JSON.stringify(msg));
-
+                        });
                 }
             }, function (error) {
                 if (error.status == "401" || error.status == "403") {
@@ -905,6 +925,10 @@ app.controller('NamespaceStatisticsController', function ($scope, $http, $locati
             });
 
 
+    }
+
+    this.back = function () {
+        $location.path("/placeList");
     }
 });
 
